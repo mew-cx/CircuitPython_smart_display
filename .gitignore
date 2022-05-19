@@ -1,0 +1,29 @@
+# .gitignore - http://mew.cx/
+# things to keep out of a repository
+
+# CircuitPython-defined stuff
+boot_out.txt
+.Trashes
+.fseventsd/
+.metadata_never_index
+
+# OS-defined stuff
+System Volume Information/
+$RECYCLE.BIN/
+.DS_Store
+
+# misc cruft
+__pycache__/
+*.log
+*.swp
+*~
+
+# mew-defined stuff
+secrets*
+HIDE/
+PRINT
+grep_*txt
+REFRESH.sh.bak
+liblist.txt
+
+# eof
