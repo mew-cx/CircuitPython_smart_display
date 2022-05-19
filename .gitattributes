@@ -1,0 +1,31 @@
+# .gitattributes - http://mew.cx/
+# See https://git-scm.com/docs/gitattributes
+# See https://help.github.com/articles/dealing-with-line-endings/
+
+# Default text file behavior, if core.autocrlf is unset.
+* text=auto
+
+# Text files to have native line endings.
+*.py text
+
+# Text files that must have DOS (\r\n) line endings.
+*.bat text eol=crlf
+
+# Text files that must have UNIX (\n) line endings.
+*.sh text eol=lf
+
+# Never adjust line endings on binary files.
+*.mpy binary
+*.jpg binary
+*.gif binary
+*.bmp binary
+*.png binary
+*.wav binary
+*.mp3 binary
+*.bin binary
+*.zip binary
+*.uf2 binary
+*.img binary
+*.pdf binary
+
+# eof
