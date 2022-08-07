@@ -1,0 +1,34 @@
+lcd_rs = digitalio.DigitalInOut(board.D7)
+lcd_en = digitalio.DigitalInOut(board.D8)
+lcd_d7 = digitalio.DigitalInOut(board.D12)
+lcd_d6 = digitalio.DigitalInOut(board.D11)
+lcd_d5 = digitalio.DigitalInOut(board.D10)
+lcd_d4 = digitalio.DigitalInOut(board.D9)
+lcd_backlight = digitalio.DigitalInOut(board.D13)
+
+#############################################################################
+# tweaked by mew, beware of errors
+
+latch_pin = digitalio.DigitalInOut(board.D5)
+sr = adafruit_74hc595.ShiftRegister74HC595(board.SPI(), latch_pin)
+
+# Create the pin objects in a list
+pins = [sr.get_pin(n) for n in range(8)]
+
+while True:
+    for _ in range(2):  # Run the chase animation twice
+        for enabled_pin in range(len(pins)):
+            for pin_number, pin in enumerate(pins):
+                pin.value = bool(pin_number == enabled_pin)
+                time.sleep(0.01)
+
+    for _ in range(3):  # Run the blink animation three times
+        for pin in pins:
+            pin.value = True
+        time.sleep(0.5)
+
+        for pin in pins:
+            pin.value = False
+        time.sleep(0.5)
+
+#############################################################################
