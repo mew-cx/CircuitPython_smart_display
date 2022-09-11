@@ -4,7 +4,7 @@
 
 # hpdl.py
 
-__version__ = "0.0.0.3"
+__version__ = "0.0.0.4"
 __repo__ = "https://github.com/mew-cx/CircuitPython_smart_display"
 
 import board
@@ -26,7 +26,7 @@ class PinBus:
         self._pins = tuple([self._init_pin(i) for i in board_pins])
         self._value = 0
 
-    def _init_pin(self, board_pin):
+    def init_pin(self, board_pin):
         pin = digitalio.DigitalInOut(board_pin)
         pin.switch_to_output()
         return pin
@@ -67,12 +67,12 @@ class HPDL1414:
         self._wr_pin.switch_to_output()
 
     def __enter__(self):
-        #raise NotImplementedException()
         return self
 
     def __exit__(self, a1, a2, a3):
-        #raise NotImplementedException()
         self.deinit()
+        supress_exception = False       # supress exception in 'with'?
+        return supress_exception
 
     def deinit(self):
         self._addr_pins.deinit()
