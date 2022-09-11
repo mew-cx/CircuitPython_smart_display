@@ -66,11 +66,6 @@ class HPDL1414:
         self._wr_pin = digitalio.DigitalInOut(wr_pin)
         self._wr_pin.switch_to_output()
 
-    def __del__(self):
-        del self._addr_pins
-        del self._data_pins
-        del self._wr_pin
-
     def __enter__(self):
         #raise NotImplementedException()
         return self
