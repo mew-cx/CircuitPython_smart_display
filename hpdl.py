@@ -4,7 +4,7 @@
 
 # hpdl.py
 
-__version__ = "0.0.0.4"
+__version__ = "0.0.0.5"
 __repo__ = "https://github.com/mew-cx/CircuitPython_smart_display"
 
 import board
@@ -22,30 +22,39 @@ import microcontroller
 #############################################################################
 
 class PinBus:
-    def __init__(self, board_pins):
-        self._pins = tuple([self._init_pin(i) for i in board_pins])
-        self._value = 0
-
-    def init_pin(self, board_pin):
-        pin = digitalio.DigitalInOut(board_pin)
-        pin.switch_to_output()
-        return pin
+    def __init__(self, board_pins, value=0):
+        self._len = len(board_pins)
+        self._max_value = 1 << _self._len - 1
+        self._value = value
+        plist = []
+        for board_pin in board_pins:
+            pin = digitalio.DigitalInOut(board_pin)
+            pin.switch_to_output(bool(value & 0x01))
+            value >>= 1
+            plist.append(pin)
+        self._pins = tuple(plist)
 
     def deinit(self):
+        if not self._pins:
+            raise AttributeError(???)
         [pin.deinit() for pin in self._pins]
+        self._pins = None
+        self._len = 0
+        self._max_value = 0
 
-    @property
-    def value(self):
-        """Return the last value written to pins"""
-        return self._value
+    len = property(lambda self: self._len)
 
-    @value.setter
-    def value(self, value):
+    max_value = property(lambda self: self._max_value)
+
+    def _set_value(self, value):
         """Write value to the pins"""
         for pin in self._pins:
             pin.value = bool(value & 0x01)
             value >>= 1
         self._value = value
+
+    value = property(lambda self: self._value,
+                     self._set_value)
 
 #############################################################################
 
@@ -91,17 +100,21 @@ class HPDL1414:
 #############################################################################
 
 DATA_PINS = (
-    microcontroller.pin.PA03,
-    microcontroller.pin.PA05,
-    #board.D1,
+    microcontroller.pin.PA23
+    microcontroller.pin.PA21
+    microcontroller.pin.PA20
+    microcontroller.pin.PA19
+    microcontroller.pin.PA17
+    microcontroller.pin.PA16
+    microcontroller.pin.PA18
 )
 
 ADDR_PINS = (
-    microcontroller.pin.PA22,
-    microcontroller.pin.PA23,
+    microcontroller.pin.PA15
+    microcontroller.pin.PA13
 )
 
-WR_PIN = microcontroller.pin.PA07
+WR_PIN = microcontroller.pin.PA12       # nWR red board.SDA
 
 a = HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN)
 
@@ -117,25 +130,13 @@ with HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN) as b:
 print("DONE")
 
 #############################################################################
-D0   wht microcontroller.pin.PA23	board.D12
-D1   gry microcontroller.pin.PA21	board.D11
-D2   vio microcontroller.pin.PA20	board.D10
-D3   blu microcontroller.pin.PA19	board.D9
-D4   brn microcontroller.pin.PA17	board.D1
-D5   blk microcontroller.pin.PA16	board.D0
-D6   grn microcontroller.pin.PA18	board.D7
-
-A0   yel microcontroller.pin.PA15	board.D5
-A1   ora microcontroller.pin.PA13	board.SCL
-
-nWR  red microcontroller.pin.PA12	board.SDA
-
 nCE1 grn microcontroller.pin.PA04	board.A4
 nCE2 blu microcontroller.pin.PA06	board.A5
 
 nCLR vio microcontroller.pin.PA01	board.SCK
 
 nBL  blk microcontroller.pin.PA07	board.D2
+
 CUE  gry microcontroller.pin.PA00	board.MOSI
 nCU  wht microcontroller.pin.PB23	board.MISO
 #############################################################################
