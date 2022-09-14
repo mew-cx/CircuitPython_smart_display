@@ -48,12 +48,9 @@ class PinBus:
         self._max_value = 1 << self._len - 1
         self._value = value
         plist = []
-        for board_pin in board_pins:
-            v = bool(value & 0x01)
+        for bpin in board_pins:
+            plist.append(OutputPin(bpin, value))
             value >>= 1
-            pin = digitalio.DigitalInOut(board_pin)
-            pin.switch_to_output(v)
-            plist.append(pin)
         self._pins = tuple(plist)
 
     def deinit(self):
@@ -67,9 +64,8 @@ class PinBus:
     def _value_setter(self, value):
         self._value = value
         for pin in self._pins:
-            v = bool(value & 0x01)
+            pin.value = value
             value >>= 1
-            pin.value = v
 
     value = property(lambda self: self._value, _value_setter, None,
             "TODO value docstring")
