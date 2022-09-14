@@ -23,22 +23,24 @@ import microcontroller
 
 class OutputPin:
     def __init__(self, board_pin, value=0):
-        self._value = bool(value & 0x01)
         self._pin = digitalio.DigitalInOut(board_pin)
-        self._pin.switch_to_output(self._value)
+        self._pin.switch_to_output(bool(value & 0x01))
 
     def deinit(self):
         assert self._pin, "object already deinited."
         self._pin.deinit()
         self._pin = None
 
-    def _value_setter(self, value):
-        assert self._pin, "object is deinited; create another."
-        self._value = bool(value & 0x01)
-        self._pin.value = self._value
-
-    value = property(lambda self: self._value, _value_setter, None,
+    value = property(lambda self: 1 if self._pin.value else 0,
+            _value_setter, None,
             "TODO value docstring")
+
+    def strobe(self, duration=0):
+        assert self._pin, "object is deinited; create another."
+        self._pin.value = not self._pin.value
+        if duration:
+            time.sleep(duration)
+        self._pin.value = not self._pin.value
 
 #############################################################################
 
