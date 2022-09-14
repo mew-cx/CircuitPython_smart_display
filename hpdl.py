@@ -21,6 +21,10 @@ import microcontroller
 
 #############################################################################
 
+class OutputPin:
+    def __init__(self, board_pins, value=0):
+        pass
+
 class PinBus:
     def __init__(self, board_pins, value=0):
         self._len = len(board_pins)
@@ -28,35 +32,36 @@ class PinBus:
         self._value = value
         plist = []
         for board_pin in board_pins:
-            pin = digitalio.DigitalInOut(board_pin)
-            pin.switch_to_output(bool(value & 0x01))
+            v = bool(value & 0x01)
             value >>= 1
+            pin = digitalio.DigitalInOut(board_pin)
+            pin.switch_to_output(v)
             plist.append(pin)
         self._pins = tuple(plist)
 
     def deinit(self):
         if not self._pins:
-            raise ValueError("object was deinited.  create another.")
+            raise ValueError("object already deinited.  create another.")
         [pin.deinit() for pin in self._pins]
         self._pins = None
         self._len = 0
         self._max_value = 0
 
-    len = property(lambda self: self._len)
-
-    max_value = property(lambda self: self._max_value)
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        """Write value to the pins"""
+    def _value_setter(self, value):
         self._value = value
         for pin in self._pins:
-            pin.value = bool(value & 0x01)
+            v = bool(value & 0x01)
             value >>= 1
+            pin.value = v
+
+    value = property(lambda self: self._value, _value_setter, None,
+            "TODO value docstring")
+
+    len = property(lambda self: self._len, None, None,
+            "TODO len docstring")
+
+    max_value = property(lambda self: self._max_value, None, None,
+            "TODO max_value docstring")
 
 #############################################################################
 
@@ -82,15 +87,17 @@ class HPDL1414:
 
     def __exit__(self, a1, a2, a3):
         self.deinit()
-        supress_exception = False       # supress exception in 'with'?
+        supress_exception = False       # supress exception from 'with'?
         return supress_exception
 
     def deinit(self):
+        print("deinit")
         self._addr_pins.deinit()
         self._data_pins.deinit()
         self._wr_pin.deinit()
 
     def SetChar(self, addr, data):
+        print("SetChar", addr, data)
         self._addr_pins.value = addr
         self._wr_pin.value = False
         self._data_pins.value = data
@@ -145,15 +152,14 @@ def main():
     a = HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN)
 
     print(a)
-    print(dir(a))
-    print(dir(a._addr_pins))
-    print(dir(a._data_pins))
     a.SetChar(1, 0)
     a.deinit()
     print(__version__)
     with HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN) as b:
         b.SetChar(0, 2)
     print("DONE")
+
+main()
 
 #############################################################################
 #nCE1 grn microcontroller.pin.PA04	board.A4
