@@ -4,7 +4,7 @@
 
 # hpdl.py
 
-__version__ = "0.0.0.5"
+__version__ = "0.0.1.0"
 __repo__ = "https://github.com/mew-cx/CircuitPython_smart_display"
 
 import board
@@ -141,18 +141,19 @@ if True:
     WR_PIN = board.GP9
 
 
-a = HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN)
+def main():
+    a = HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN)
 
-print(a)
-print(dir(a))
-print(dir(a._addr_pins))
-print(dir(a._data_pins))
-a.SetChar(1, 0)
-a.deinit()
-print(__version__)
-with HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN) as b:
-    b.SetChar(0, 2)
-print("DONE")
+    print(a)
+    print(dir(a))
+    print(dir(a._addr_pins))
+    print(dir(a._data_pins))
+    a.SetChar(1, 0)
+    a.deinit()
+    print(__version__)
+    with HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN) as b:
+        b.SetChar(0, 2)
+    print("DONE")
 
 #############################################################################
 #nCE1 grn microcontroller.pin.PA04	board.A4
