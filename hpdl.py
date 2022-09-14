@@ -28,12 +28,12 @@ class OutputPin:
         self._pin.switch_to_output(self._value)
 
     def deinit(self):
-        if not self._pin:
-            raise ValueError("object is deinited; create another.")
+        assert self._pin, "object already deinited."
         self._pin.deinit()
         self._pin = None
 
     def _value_setter(self, value):
+        assert self._pin, "object is deinited; create another."
         self._value = bool(value & 0x01)
         self._pin.value = self._value
 
@@ -54,14 +54,15 @@ class PinBus:
         self._pins = tuple(plist)
 
     def deinit(self):
-        if not self._pins:
-            raise ValueError("object is deinited; create another.")
+        assert self._pins, "object already deinited."
         [pin.deinit() for pin in self._pins]
         self._pins = None
         self._len = 0
         self._max_value = 0
 
     def _value_setter(self, value):
+        assert self._pins, "object is deinited; create another."
+        assert value>=0 and value<=self._max_value, "value is out of range."
         self._value = value
         for pin in self._pins:
             pin.value = value
