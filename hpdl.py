@@ -22,8 +22,25 @@ import microcontroller
 #############################################################################
 
 class OutputPin:
-    def __init__(self, board_pins, value=0):
-        pass
+    def __init__(self, board_pin, value=0):
+        self._value = bool(value & 0x01)
+        self._pin = digitalio.DigitalInOut(board_pin)
+        self._pin.switch_to_output(self._value)
+
+    def deinit(self):
+        if not self._pin:
+            raise ValueError("object is deinited; create another.")
+        self._pin.deinit()
+        self._pin = None
+
+    def _value_setter(self, value):
+        self._value = bool(value & 0x01)
+        self._pin.value = self._value
+
+    value = property(lambda self: self._value, _value_setter, None,
+            "TODO value docstring")
+
+#############################################################################
 
 class PinBus:
     def __init__(self, board_pins, value=0):
@@ -41,7 +58,7 @@ class PinBus:
 
     def deinit(self):
         if not self._pins:
-            raise ValueError("object already deinited.  create another.")
+            raise ValueError("object is deinited; create another.")
         [pin.deinit() for pin in self._pins]
         self._pins = None
         self._len = 0
