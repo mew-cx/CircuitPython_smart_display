@@ -4,7 +4,7 @@
 
 # hpdl.py
 
-__version__ = "0.0.1.2"
+__version__ = "0.0.1.3"
 __repo__ = "https://github.com/mew-cx/CircuitPython_smart_display"
 
 import board
@@ -116,22 +116,22 @@ class HPDL1414:
     def put(self, addr, data):
         "Put a single character at specified position"
         print(type(self), "put(", addr, data, ")")
-        assert 0 <= addr < NUM_CHARS, "addr is out of range."
-        assert isinstance(int, data), "data must be integer ascii code."
+        assert 0 <= addr < self.NUM_CHARS, "addr is out of range."
+        #TODO assert isinstance(int, data), "data must be integer ascii code."
         self._addr_pins.value = addr
         self._data_pins.value = data
         self._wr_pin.strobe()
 
     def fill(self, data):
         print(type(self), "fill(", data, ")")
-        for i in range(NUM_CHARS):
-            put(i, data)
+        for i in range(self.NUM_CHARS):
+            self.put(i, data)
 
     def print(self, msg):
         print(type(self), "print(", msg, ")")
-        assert len(msg) <= NUM_CHARS, "msg is too long."
+        assert len(msg) <= self.NUM_CHARS, "msg is too long."
         for i,c in enumerate(msg):
-            put(NUM_CHARS - i - 1, ord(c))
+            self.put(self.NUM_CHARS - i - 1, ord(c))
         #raise NotImplementedError()
 
 #############################################################################
@@ -217,35 +217,39 @@ if False:
 # RasPi Pico
 if True:
     ADDR_PINS = (
-        board.GP7,
-        board.GP8,
+        board.GP4,      # yel
+        board.GP3,      # ora
     )
 
     DATA_PINS = (
-        board.GP0,
-        board.GP1,
-        board.GP2,
-        board.GP3,
-        board.GP4,
-        board.GP5,
-        board.GP6,
+        board.GP9,      # wht
+        board.GP8,      # gry
+        board.GP7,      # vio
+        board.GP6,      # blu
+        board.GP0,      # blk
+        board.GP1,      # brn
+        board.GP5,      # grn
     )
 
-    WR_PIN = board.GP9
+    WR_PIN = board.GP2  # red
 
 #############################################################################
 
 def main():
     a = HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN)
     print(a)
+    a.put(0, 35)
     a.put(1, 0)
+    a.put(2, ord("X"))
+    a.put(3, ord("G"))
+    a.fill(35)
     a.deinit()
 
     with HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN) as b:
         b.put(0, 2)
 
-    x = HPDL2416(ADDR_PINS, DATA_PINS, WR_PIN,
-        CE_PINS, nCLR_PIN, nBL_PIN, CUE_PIN, nCU_PIN)
+#TODO    x = HPDL2416(ADDR_PINS, DATA_PINS, WR_PIN,
+#        CE_PINS, nCLR_PIN, nBL_PIN, CUE_PIN, nCU_PIN)
 
     print(__version__)
 
