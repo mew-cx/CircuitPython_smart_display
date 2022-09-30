@@ -4,7 +4,7 @@
 
 # hpdl.py
 
-__version__ = "0.0.1.3"
+__version__ = "0.0.1.4"
 __repo__ = "https://github.com/mew-cx/CircuitPython_smart_display"
 
 import board
@@ -36,6 +36,7 @@ class OutputPin:
             "TODO value docstring")
 
     def strobe(self, duration=0):
+        "Flip pin state, wait a bit, then flip again to restore."
         assert self._pin, "object is deinited; create another." # TODO type(self)
         self._pin.value = not self._pin.value
         if duration:
@@ -117,7 +118,7 @@ class HPDL1414:
         "Put a single character at specified position"
         print(type(self), "put(", addr, data, ")")
         assert 0 <= addr < self.NUM_CHARS, "addr is out of range."
-        #TODO assert isinstance(int, data), "data must be integer ascii code."
+        assert 32 <= data < 128, "data must be integer ascii code."
         self._addr_pins.value = addr
         self._data_pins.value = data
         self._wr_pin.strobe()
@@ -131,7 +132,7 @@ class HPDL1414:
         print(type(self), "print(", msg, ")")
         assert len(msg) <= self.NUM_CHARS, "msg is too long."
         for i,c in enumerate(msg):
-            self.put(self.NUM_CHARS - i - 1, ord(c))
+            self.put((self.NUM_CHARS-1) - i, ord(c))
         #raise NotImplementedError()
 
 #############################################################################
@@ -166,10 +167,12 @@ class HPDL2416(HPDL1414):
         self._ce_pins.value = value
 
     def clear(self):
+        # per datasheet, hold nCLR low at least 4ms
         print(type(self), "clear()")
         self._nclr_pin.strobe(0.005)
 
     def blank(self, value):
+        # nBL is inverted logic
         print(type(self), "blank(", value, ")")
         self._nbl_pin.value(not bool(value))
 
@@ -178,6 +181,7 @@ class HPDL2416(HPDL1414):
         self._cue_pin.value(bool(value))
 
     def cursor_mode(self, value):
+        # nCU is inverted logic
         print(type(self), "cursor_mode(", value, ")")
         self._ncu_pin.value(not bool(value))
 
@@ -226,8 +230,8 @@ if True:
         board.GP8,      # gry
         board.GP7,      # vio
         board.GP6,      # blu
-        board.GP0,      # blk
         board.GP1,      # brn
+        board.GP0,      # blk
         board.GP5,      # grn
     )
 
@@ -242,7 +246,7 @@ def main():
     a.put(1, 0)
     a.put(2, ord("X"))
     a.put(3, ord("G"))
-    a.fill(35)
+    a.fill(65)
     a.deinit()
 
     with HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN) as b:
