@@ -9,7 +9,8 @@ __repo__ = "https://github.com/mew-cx/CircuitPython_smart_display"
 
 import board
 import digitalio
-from time import sleep
+#from time import sleep
+import time
 
 #import mew_pinbus
 
@@ -31,8 +32,16 @@ class OutputPin:
         self._pin.deinit()
         self._pin = None
 
+#    @property
+#    def value(self):
+#        return 1 if self._pin.value else 0
+
+#    @value.setter
+    def _value_setter(self, value):
+        self._pin.value = bool(value)
+
     value = property(lambda self: 1 if self._pin.value else 0,
-            lambda self, value: bool(value), None,
+            _value_setter, None,
             "TODO value docstring")
 
     def strobe(self, duration=0):
@@ -65,11 +74,13 @@ class PinBus:
         self._max_value = 0
 
     def _value_setter(self, value):
+        print("PinBus setter(",value,")")
         assert self._pins, "object is deinited; create another."        # TODO type(self)
         assert 0 <= value <= self._max_value, "value is out of range."
         self._value = value
         for pin in self._pins:
             pin.value = value & 0x01
+            print("\t", pin.value)
             value >>= 1
 
     value = property(lambda self: self._value, _value_setter, None,
@@ -124,12 +135,14 @@ class HPDL1414:
         self._wr_pin.strobe()
 
     def fill(self, data):
-        print(type(self), "fill(", data, ")")
         for i in range(self.NUM_CHARS):
             self.put(i, data)
 
+    def clear(self):
+        print(type(self), "clear()")
+        self.fill(ord(" "))
+
     def print(self, msg):
-        print(type(self), "print(", msg, ")")
         assert len(msg) <= self.NUM_CHARS, "msg is too long."
         for i,c in enumerate(msg):
             self.put((self.NUM_CHARS-1) - i, ord(c))
@@ -242,15 +255,17 @@ if True:
 def main():
     a = HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN)
     print(a)
-    a.put(0, 35)
-    a.put(1, 0)
-    a.put(2, ord("X"))
-    a.put(3, ord("G"))
     a.fill(65)
+    time.sleep(1)
+    a.put(3, ord("S"))
+    a.put(2, ord("E"))
+    a.put(1, ord("A"))
+    a.put(0, ord("X"))
+    time.sleep(1)
+    a.clear()
+    time.sleep(1)
+    a.print("FRED")
     a.deinit()
-
-    with HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN) as b:
-        b.put(0, 2)
 
 #TODO    x = HPDL2416(ADDR_PINS, DATA_PINS, WR_PIN,
 #        CE_PINS, nCLR_PIN, nBL_PIN, CUE_PIN, nCU_PIN)
