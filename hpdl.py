@@ -80,7 +80,7 @@ class PinBus:
         self._value = value
         for pin in self._pins:
             pin.value = value & 0x01
-            print("\t", pin.value)
+            #print("\t", pin.value)
             value >>= 1
 
     value = property(lambda self: self._value, _value_setter, None,
