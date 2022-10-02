@@ -4,7 +4,7 @@
 
 # hpdl.py
 
-__version__ = "0.0.1.4"
+__version__ = "0.0.2.0"
 __repo__ = "https://github.com/mew-cx/CircuitPython_smart_display"
 
 import board
