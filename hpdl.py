@@ -28,7 +28,7 @@ class OutputPin:
         self._pin.switch_to_output(bool(value))
 
     def deinit(self):
-        assert self._pin, "object already deinited."    # TODO type(self)
+        assert self._pin, "OutputPin already deinited."    # TODO type(self)
         self._pin.deinit()
         self._pin = None
 
@@ -67,7 +67,7 @@ class PinBus:
         self._pins = tuple(plist)
 
     def deinit(self):
-        assert self._pins, "object already deinited."   # TODO type(self)
+        assert self._pins, "PinBus already deinited."   # TODO type(self)
         [pin.deinit() for pin in self._pins]
         self._pins = None
         self._len = 0
