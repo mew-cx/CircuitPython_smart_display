@@ -74,7 +74,7 @@ class PinBus:
         self._max_value = 0
 
     def _value_setter(self, value):
-        print("PinBus setter(",value,")")
+        #print("PinBus setter(",value,")")
         assert self._pins, "object is deinited; create another."        # TODO type(self)
         assert 0 <= value <= self._max_value, "value is out of range."
         self._value = value
@@ -120,14 +120,14 @@ class HPDL1414:
         return False
 
     def deinit(self):
-        print(type(self), "deinit()")
+        #print(type(self), "deinit()")
         self._addr_pins.deinit()
         self._data_pins.deinit()
         self._wr_pin.deinit()
 
     def put(self, addr, data):
         "Put a single character at specified position"
-        print(type(self), "put(", addr, data, ")")
+        #print(type(self), "put(", addr, data, ")")
         assert 0 <= addr < self.NUM_CHARS, "addr is out of range."
         assert 32 <= data < 128, "data must be integer ascii code."
         self._addr_pins.value = addr
@@ -139,7 +139,6 @@ class HPDL1414:
             self.put(i, data)
 
     def clear(self):
-        print(type(self), "clear()")
         self.fill(ord(" "))
 
     def print(self, msg):
