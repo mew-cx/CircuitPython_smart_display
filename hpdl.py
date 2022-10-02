@@ -252,19 +252,21 @@ if True:
 #############################################################################
 
 def main():
-    a = HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN)
-    print(a)
-    a.fill(65)
-    time.sleep(1)
-    a.put(3, ord("S"))
-    a.put(2, ord("E"))
-    a.put(1, ord("A"))
-    a.put(0, ord("X"))
-    time.sleep(1)
-    a.clear()
-    time.sleep(1)
-    a.print("FRED")
-    a.deinit()
+    with HPDL1414(ADDR_PINS, DATA_PINS, WR_PIN) as a:
+        a.fill(ord("!"))
+        time.sleep(1)
+
+        a.put(3, ord("3"))
+        a.put(2, ord("2"))
+        a.put(1, ord("1"))
+        a.put(0, ord("0"))
+        time.sleep(1)
+
+        a.clear()
+        time.sleep(1)
+
+        a.print("ABCD")
+        time.sleep(1)
 
 #TODO    x = HPDL2416(ADDR_PINS, DATA_PINS, WR_PIN,
 #        CE_PINS, nCLR_PIN, nBL_PIN, CUE_PIN, nCU_PIN)
